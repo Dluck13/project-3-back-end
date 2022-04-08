@@ -34,8 +34,10 @@ public class DiscountController {
 	}
 	
 	@PostMapping("add/discounts")
-	DiscountPojo addDiscount( @Valid @RequestBody DiscountPojo discount) throws ApplicationException{
+	DiscountPojo addDiscount( @RequestBody DiscountPojo discount) throws ApplicationException{
+		System.out.println(discount.toString());
 		return discountService.addDiscount(discount);
+	//	return null;
 	}
 	
 	

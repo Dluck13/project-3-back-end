@@ -1,8 +1,12 @@
 package com.project3.revtech.service;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -11,7 +15,11 @@ import com.project3.revtech.dao.UserRepository;
 import com.project3.revtech.dao.WishListRepository;
 import com.project3.revtech.entity.UserEntity;
 import com.project3.revtech.entity.WishListEntity;
+import com.project3.revtech.entity.WishListItemEntity;
 import com.project3.revtech.exception.ApplicationException;
+import com.project3.revtech.pojo.ProductPojo;
+import com.project3.revtech.pojo.UserPojo;
+import com.project3.revtech.pojo.WishListItemPojo;
 import com.project3.revtech.pojo.WishListPojo;
 
 
@@ -28,45 +36,53 @@ public class WishListServiceImpl implements WishListService {
   
 	@Override
 	public WishListPojo addWishList(WishListPojo wishList) throws ApplicationException {
-		UserEntity user = userRepository.findById(wishList.getUserId()).get();
 		
+		List<WishListEntity> allWishList = wishListRepository.findAll();  // fetches all wishlist and check if a wishlist exist in the for loop
+		for(WishListEntity awishList : allWishList) {					  // if it does then it will just return the exisiting wishlist
+			if(awishList.getUserEntity().getUserId() == wishList.getUserPojo().getUser_id()) {
+				BeanUtils.copyProperties(awishList, wishList);
+				BeanUtils.copyProperties(awishList.getUserEntity(), wishList.getUserPojo());
+				return wishList;
+			}
+		}
+		
+		UserEntity user = userRepository.findById(wishList.getUserPojo().getUser_id()).get();
 		WishListEntity wishListEntity = new WishListEntity(user);
-		//System.out.println("this is addwishlist from service" + wishListEntity);
-		WishListEntity returnWishList = wishListRepository.save(wishListEntity);
+		WishListEntity returnWishList = wishListRepository.saveAndFlush(wishListEntity);
 		
 		wishList.setWishListId(returnWishList.getWishListId());
-		//wishList.setUserId(returnWishList.getUserId());
-		
-		//System.out.println("this is from wishlistservice: " + wishList);
-		return wishList;
-	}
+		BeanUtils.copyProperties(returnWishList.getUserEntity(), wishList.getUserPojo());
 	
-	@Override
-	public WishListPojo updateWishList(WishListPojo wishListPojo) throws ApplicationException {
-		UserEntity user = userRepository.findById(wishListPojo.getUserId()).get();
-		
-		WishListEntity wishListEntity = new WishListEntity(wishListPojo.getWishListId(), user);
-		WishListEntity returnWishList = wishListRepository.saveAndFlush(wishListEntity);
-		wishListPojo.setWishListId(returnWishList.getWishListId());
-		return wishListPojo;
-	}
-
-	@Override
-	public WishListPojo getWishList(int wishListId) throws ApplicationException {
-		WishListEntity wishListEntity = wishListRepository.findByWishListId(wishListId);
-		WishListPojo wishList = new WishListPojo(wishListEntity.getWishListId(), wishListEntity.getUserEntity().getUserId());
 		return wishList;
 	}
 
 	@Override
 	public WishListPojo getListByUserId(int userId) throws ApplicationException {
-		WishListEntity wishListEntity = wishListRepository.getWishListByUserId(userId);
-		//System.out.println("this is from wishlistservice"+ wishListEntity);
-
+		
+		WishListEntity wishListEntity = wishListRepository.getWishListByUserId(userId);  //getting wishlist by userid
+		
 		WishListPojo wishList = new WishListPojo();
+		UserPojo user = new UserPojo();
+		
 		wishList.setWishListId(wishListEntity.getWishListId());
-		wishList.setUserId(wishListEntity.getUserEntity().getUserId());
+		wishList.setWishListTotal(wishListEntity.getWishListTotal());
+		BeanUtils.copyProperties(wishListEntity.getUserEntity(), user);
+		user.setUser_id(userId);
+		wishList.setUserPojo(user);
 
+		List<WishListItemPojo> wishItemPojo = new ArrayList<WishListItemPojo>();
+		
+		for(WishListItemEntity wishItem : wishListEntity.getWishListItems()) {
+			WishListItemPojo items = new WishListItemPojo();
+			BeanUtils.copyProperties(wishItem, items);
+			
+			ProductPojo product = new ProductPojo();
+			BeanUtils.copyProperties(wishItem.getProductEntity(), product);
+			items.setProductPojo(product);
+			wishItemPojo.add(items);
+		}
+		
+		wishList.setWishListItems(wishItemPojo);
 		return wishList;
 	}
 

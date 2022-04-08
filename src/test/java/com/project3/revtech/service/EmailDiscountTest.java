@@ -24,7 +24,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.ServerSetupTest;
-import com.project3.revtech.dao.WishListProductUserRepository;
 import com.project3.revtech.entity.ProductEntity;
 import com.project3.revtech.entity.UserEntity;
 import com.project3.revtech.entity.WishListEntity;
@@ -43,8 +42,6 @@ public class EmailDiscountTest {
 	
 	@Autowired
 	EmailDiscountServiceImpl emailDiscountTest;
-	@MockBean
-	WishListProductUserRepository wlpuRepository;
 	@MockBean
 	EmailService eService;
 

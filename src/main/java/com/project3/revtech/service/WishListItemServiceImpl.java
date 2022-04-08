@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,71 +38,28 @@ public class WishListItemServiceImpl implements WishListItemService {
 
 	@Override
 	public WishListItemPojo addItem(WishListItemPojo item) throws ApplicationException {
-		//System.out.println("this is addItem in wishListItemService" + item);
+		
+		WishListEntity wishList = wishListRepository.findByWishListId(item.getWishListPojo().getWishListId());
+		ProductEntity productEntity = productRepository.findByProductId(item.getProductPojo().getProductId());
 		
 		WishListItemEntity wishItem = new WishListItemEntity();
-		wishItem.getWishListEntity().setWishListId(item.getWishListId());
-		wishItem.getProductEntity().setProductId(item.getProductId());
+		wishItem.setWishListEntity(wishList);
+		wishItem.setProductEntity(productEntity);
+		wishItem.getWishListEntity().setWishListTotal(wishItem.getWishListEntity().getWishListTotal()+1);
 		
 		WishListItemEntity returningItem = wishItemRepository.saveAndFlush(wishItem);
 		item.setWishItemId(returningItem.getWishItemId());
+
+		BeanUtils.copyProperties(returningItem.getProductEntity(), item.getProductPojo());
+		BeanUtils.copyProperties(returningItem.getWishListEntity(), item.getWishListPojo());
 		
 		return item;
 	}
-
-
-//	@Override
-//	public WishListItemPojo updateItem(WishListItemPojo item) throws ApplicationException {
-//		WishListItemEntity existingItem = wishItemRepository.findByWishListIdAndProductId(item.getWishListId(), item.getProductId());
-//		
-//		if(existingItem == null) return addItem(item);
-//		item.setWishItemId(existingItem.getWishItemId());
-//		
-//		if(this.checkIfNoQty(item.getWishListId(), item.getProductId())) {
-//			this.removeItem(item.getWishItemId());
-//			item.setWishItemId(-1);
-//		} else {
-//			WishListItemEntity itemEntity = new WishListItemEntity(item.getWishItemId(), item.getWishListId(), item.getProductId());
-//			WishListItemEntity returningItem = wishItemRepository.save(itemEntity);
-//		}
-//		return item;
-//	}
 
 	@Override
 	public boolean removeItem(int itemId) throws ApplicationException {
 		wishItemRepository.deleteById(itemId);
 		return true;
 	}
-
-	@Override
-	public WishListItemPojo getWishListItem(int wishItemId) throws ApplicationException {
-		Optional<WishListItemEntity> optional = wishItemRepository.findById(wishItemId);
-		WishListItemPojo wishListItemPojo = null;
-		
-		if(optional.isPresent()) {
-			WishListItemEntity wishListItemEntity = optional.get();
-			wishListItemPojo = new WishListItemPojo(
-					wishListItemEntity.getWishListEntity().getWishListId(),
-					wishListItemEntity.getWishItemId(),
-					wishListItemEntity.getProductEntity().getProductId());
-		}
-		return wishListItemPojo;
-	}
-
-
-	@Override
-	public List<WishListItemPojo> getAllItemsOfWishList(WishListItemPojo wishListItemPojo) throws ApplicationException {
-		return null;
-	}
-//
-//	@Override
-//	public boolean checkIfExistsInWishList(int wishListId, int productId) throws ApplicationException {
-//		return wishItemRepository.existsByWishListIdAndProductId(wishListId, productId);
-//	}
-
-
-//	@Override
-//	public boolean checkIfNoQty(int wishListId, int productId) throws ApplicationException {
-//		return wishItemRepository.existsByWishListQtyIsLessThanAndWishListIdAndProductId(1, wishListId, productId);
-//	}
+	
 }

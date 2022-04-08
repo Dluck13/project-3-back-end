@@ -1,6 +1,6 @@
---CREATE DATABASE shopme;
+CREATE DATABASE shopme;
 
---\c shopme
+\c shopme
 
 DROP TABLE IF EXISTS user_details;
 

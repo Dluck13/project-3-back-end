@@ -40,5 +40,8 @@ public class WishListItemEntity {
 		this.productEntity = productEntity;
 	}
 
+	public WishListItemEntity(WishListItemEntity tempitem) {
+	}
+
 	
 }
