@@ -42,7 +42,7 @@ public class EmailDiscountServiceImpl {
 	// todo add custom exceptions
 	public List<SentEmailsPojo> sendByDiscount(DiscountPojo discount) {
 		
-		//temporary
+		
 		List<WishListItemEntity> wishedDiscounts;
 		try {
 			wishedDiscounts = wishItemRepository.findAllByProductId(discount.getProductId());		
@@ -50,9 +50,11 @@ public class EmailDiscountServiceImpl {
 			{
 				// stops sentEmails from having a dooped entry
 				sentEmails.clear();
+				
+				// Creates email message
 				String messageText = wishItemEntity.getProductEntity().getProductName() + "Just went on Sale \n"
 				+ "GET " + discount.getDiscountPercentage().multiply(new BigDecimal(100)) + "% OFF!!!!!";			
-				// not sure if necessary
+				// not sure if necessary, Create return to test
 				try {
 					// wish-Item -> wish-list-details -> users join call
 					emailService.sendMessage(wishItemEntity.getWishListEntity().getUserEntity().getEmail(),"Discount",messageText);
@@ -87,7 +89,7 @@ public class EmailDiscountServiceImpl {
 	
 	
 	
-	// awaiting joined bundle pojo
+	// Sends discounts for bundles, dubplicate emails if both items are wishlisted
 	public List<SentEmailsPojo> sendByBundle(BundlePojo bundle) {
 		
 		
@@ -102,8 +104,8 @@ public class EmailDiscountServiceImpl {
 			for(WishListItemEntity wishItemEntity : wishedDiscounts)
 			{
 				
-				String messageText = bundle.getProductOnePojo().getProductName() + "Just went on Sale \n"
-				+ "GET " + bundle.getBundlePercentage().multiply(new BigDecimal(100)) + "% OFF!!!!!";			
+				String messageText = bundle.getProductOnePojo().getProductName() + "Just went on Sale in the " + bundle.getBundleName() + " with the " + bundle.getProductTwoPojo().getProductName() + " \n"
+				+ "GET " + bundle.getBundlePercentage().multiply(new BigDecimal(100)) + "% OFF THE BUNDLE!!!!!!!!!";			
 				// not sure if necessary
 				try {
 					// wish-Item -> wish-list-details -> users join call
@@ -134,7 +136,7 @@ public class EmailDiscountServiceImpl {
 			wishedDiscounts = wishItemRepository.findAllByProductId(bundle.getProductTwoPojo().getProductId());		
 			for(WishListItemEntity wishItemEntity : wishedDiscounts)
 			{
-				String messageText = bundle.getProductOnePojo().getProductName() + "Just went on Sale \n"
+				String messageText = bundle.getProductTwoPojo().getProductName() + "Just went on Sale in the " + bundle.getBundleName() + " with the " + bundle.getProductOnePojo().getProductName() + " \n"
 				+ "GET " + bundle.getBundlePercentage().multiply(new BigDecimal(100)) + "% OFF!!!!!";			
 				// not sure if necessary
 				try {

@@ -26,6 +26,9 @@ public class BundleServiceImpl implements BundleService {
 	
 	@Autowired
 	ProductRepository productRepository;
+	
+	@Autowired
+	EmailDiscountServiceImpl emailDiscountService;
 
 	@Override
 	public List<BundlePojo> getAllBundles() throws ApplicationException {
@@ -62,6 +65,9 @@ public class BundleServiceImpl implements BundleService {
 		bundlePojo.setBundleId(bundleEntity.getBundleId());
 		BeanUtils.copyProperties(productOneEntity,bundlePojo.getProductOnePojo());
 		BeanUtils.copyProperties(productTwoEntity,bundlePojo.getProductTwoPojo());
+		
+		//Email discount intercept
+		emailDiscountService.sendByBundle(bundlePojo);
 		return bundlePojo;
 	}
 }

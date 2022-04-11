@@ -2,10 +2,16 @@ package com.project3.revtech.pojo;
 
 import java.math.BigDecimal;
 
-import org.springframework.stereotype.Component;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
-
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class DiscountPojo {
 
     private int discountId;
@@ -13,44 +19,8 @@ public class DiscountPojo {
     private String discountDescription;
     private BigDecimal discountPercentage;
 
-    public DiscountPojo(int discountId, int productId, String discountDescription, BigDecimal discountPercentage) {
-        this.discountId = discountId;
-        this.productId = productId;
-        this.discountDescription = discountDescription;
-        this.discountPercentage = discountPercentage;
-    }
 
-    public int getDiscountId() {
-        return discountId;
-    }
 
-    public void setDiscountId(int discountId) {
-        this.discountId = discountId;
-    }
-
-    public int getProductId() {
-        return productId;
-    }
-
-    public void setProductId(int productId) {
-        this.productId = productId;
-    }
-
-    public String getDiscountDescription() {
-        return discountDescription;
-    }
-
-    public void setDiscountDescription(String discountDescription) {
-        this.discountDescription = discountDescription;
-    }
-
-    public BigDecimal getDiscountPercentage() {
-        return discountPercentage;
-    }
-
-    public void setDiscountPercentage(BigDecimal discountPercentage) {
-        this.discountPercentage = discountPercentage;
-    }
 
     @Override
     public String toString() {
