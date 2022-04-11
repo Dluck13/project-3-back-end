@@ -48,6 +48,7 @@ public class WishListServiceImpl implements WishListService {
 		}
 		
 		UserEntity user = userRepository.findById(wishList.getUserPojo().getUser_id()).get();
+		System.out.println(user);
 		WishListEntity wishListEntity = new WishListEntity(user);
 		WishListEntity returnWishList = wishListRepository.saveAndFlush(wishListEntity);
 		
@@ -79,7 +80,13 @@ public class WishListServiceImpl implements WishListService {
 			
 			ProductAndDiscountPojo product = new ProductAndDiscountPojo();
 			BeanUtils.copyProperties(wishItem.getProductEntity(), product);
-			items.setProductPojo(product);
+			items.setProductAndDiscountPojo(product);
+			
+			if(wishItem.getProductEntity().getDiscountEntity() != null) {
+				items.getProductAndDiscountPojo().setDiscountId(wishItem.getProductEntity().getDiscountEntity().getDiscountId());
+				items.getProductAndDiscountPojo().setDiscountDescription(wishItem.getProductEntity().getDiscountEntity().getDiscountDescription());
+				items.getProductAndDiscountPojo().setDiscountPercentage(wishItem.getProductEntity().getDiscountEntity().getDiscountPercentage());
+			}
 			wishItemPojo.add(items);
 		}
 		

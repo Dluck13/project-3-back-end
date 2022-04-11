@@ -104,7 +104,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
       .authorizeRequests().antMatchers("/api/wishList/user/{bid}/get").permitAll().and()
       .authorizeRequests().antMatchers("/api/wishList-items/add/items").permitAll().and()
       .authorizeRequests().antMatchers("/api/wishList-items/{bid}/delete").permitAll()
-
+      
 
 	  .anyRequest().authenticated();
 	   http.headers().frameOptions().disable();

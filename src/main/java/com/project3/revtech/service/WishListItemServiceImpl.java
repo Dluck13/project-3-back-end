@@ -40,7 +40,7 @@ public class WishListItemServiceImpl implements WishListItemService {
 	public WishListItemPojo addItem(WishListItemPojo item) throws ApplicationException {
 		
 		WishListEntity wishList = wishListRepository.findByWishListId(item.getWishListPojo().getWishListId());
-		ProductEntity productEntity = productRepository.findByProductId(item.getProductPojo().getProductId());
+		ProductEntity productEntity = productRepository.findByProductId(item.getProductAndDiscountPojo().getProductId());
 		
 		WishListItemEntity wishItem = new WishListItemEntity();
 		wishItem.setWishListEntity(wishList);
@@ -50,7 +50,13 @@ public class WishListItemServiceImpl implements WishListItemService {
 		WishListItemEntity returningItem = wishItemRepository.saveAndFlush(wishItem);
 		item.setWishItemId(returningItem.getWishItemId());
 
-		BeanUtils.copyProperties(returningItem.getProductEntity(), item.getProductPojo());
+		BeanUtils.copyProperties(returningItem.getProductEntity(), item.getProductAndDiscountPojo());
+		if(returningItem.getProductEntity().getDiscountEntity() != null) {
+			item.getProductAndDiscountPojo().setDiscountId(returningItem.getProductEntity().getDiscountEntity().getDiscountId());
+			item.getProductAndDiscountPojo().setDiscountDescription(returningItem.getProductEntity().getDiscountEntity().getDiscountDescription());
+			item.getProductAndDiscountPojo().setDiscountPercentage(returningItem.getProductEntity().getDiscountEntity().getDiscountPercentage());
+		}
+		
 		BeanUtils.copyProperties(returningItem.getWishListEntity(), item.getWishListPojo());
 		
 		return item;
