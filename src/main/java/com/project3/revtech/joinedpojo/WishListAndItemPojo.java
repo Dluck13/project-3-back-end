@@ -2,6 +2,8 @@ package com.project3.revtech.joinedpojo;
 
 import java.util.List;
 
+import com.project3.revtech.pojo.WishListPojo;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
